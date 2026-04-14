@@ -47,6 +47,11 @@ const updateContact = expressAsyncHandler(async(req, res) => {
         throw new Error("Contact not found!");
     }
 
+    if(contact.user_id.toString() !== req.user.id) {
+        res.status(403);
+        throw new Error("User is not authorised to update other contacts")
+    }
+
     const updatedContact = await Contact.findByIdAndUpdate(
         req.params.id,
         req.body,
@@ -69,6 +74,11 @@ const deleteContact = expressAsyncHandler(async(req, res) => {
     if(!contact) {
         res.status(404);
         throw new Error("Contact not found!");
+    }
+
+    if(contact.user_id.toString() !== req.user.id) {
+        res.status(403);
+        throw new Error("User is not authorised to update other contacts")
     }
 
     await Contact.findByIdAndDelete(req.params.id);
