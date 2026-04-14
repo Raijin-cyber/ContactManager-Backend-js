@@ -3,15 +3,15 @@ import Contact from "../../models/contactModel.js";
 
 //@desc Get all Contacts
 //@route " GET /api/contact"
-//@access public
+//@access private
 const getAllContact = expressAsyncHandler(async(req, res) => {
-    const contacts = await Contact.find();
+    const contacts = await Contact.find({ user_id: req.user.id });
     res.status(200).json(contacts);
 })
 
 //@desc Create a contact
 //@route " POST /api/contact"
-//@access public
+//@access private
 const createContact = expressAsyncHandler(async(req, res) => {
     const {name, email, phone} = req.body;
     if(!name || !email || !phone) {
@@ -19,14 +19,14 @@ const createContact = expressAsyncHandler(async(req, res) => {
         throw new Error("All fields are mandatory!")
     }
 
-    const contact = await Contact.create({name, email, phone});
+    const contact = await Contact.create({ name, email, phone, user_id: req.user.id });
     res.status(201).json({mesaage: `Contact ${req.body.name} created successfully!`, result: contact});
 
 })
 
 //@desc Get a contact
 //@route " GET /api/contact/:id"
-//@access public
+//@access private
 const getContact = expressAsyncHandler(async(req, res) => {
     const contact = await Contact.findById(req.params.id);
     if(!contact) {
@@ -38,7 +38,7 @@ const getContact = expressAsyncHandler(async(req, res) => {
 
 //@desc Update a contact
 //@route " PUT /api/contact/:id"
-//@access public
+//@access private
 const updateContact = expressAsyncHandler(async(req, res) => {
 
     const contact = await Contact.findById(req.params.id);
@@ -63,7 +63,7 @@ const updateContact = expressAsyncHandler(async(req, res) => {
 
 //@desc Delete a contact
 //@route " DELETE /api/contact/:id"
-//@access public
+//@access private
 const deleteContact = expressAsyncHandler(async(req, res) => {
     const contact = await Contact.findById(req.params.id);
     if(!contact) {
